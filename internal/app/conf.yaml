@@ -1,0 +1,13 @@
+#!syntax yaml
+
+# Network Configurations
+cubes:
+  - name: CUBE4
+    ip: 10.10.10.104
+    port: 502
+  # - name: CUBE3
+  #   ip: 10.10.10.103
+  #   port: 502
+
+# Program Configurations
+delay: 3600
