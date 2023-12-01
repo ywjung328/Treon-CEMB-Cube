@@ -27,7 +27,7 @@ func byteArrayToUint16(data []byte) (uint16, error) {
 func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 	var realTimeMeasurements RealTimeMeasurements
 
-	accResult, err := ReadInputRegister(cube, uint16(0), uint16(8))
+	accResult, err := ReadInputRegisters(cube, uint16(0), uint16(8))
 	if err != nil {
 		return realTimeMeasurements, err
 	} else if len(accResult) != 16 {
@@ -54,7 +54,7 @@ func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 	realTimeMeasurements.AccZ = accZ
 	realTimeMeasurements.AccMax = accMax
 
-	velResult, err := ReadInputRegister(cube, uint16(10), uint16(8))
+	velResult, err := ReadInputRegisters(cube, uint16(10), uint16(8))
 	if err != nil {
 		return realTimeMeasurements, err
 	} else if len(velResult) != 16 {
@@ -81,7 +81,7 @@ func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 	realTimeMeasurements.VelZ = velZ
 	realTimeMeasurements.VelMax = velMax
 
-	otherResult, err := ReadInputRegister(cube, uint16(20), uint16(12))
+	otherResult, err := ReadInputRegisters(cube, uint16(20), uint16(12))
 	if err != nil {
 		return realTimeMeasurements, err
 	} else if len(otherResult) != 24 {
@@ -124,7 +124,7 @@ func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 func GetAnalogDigitalOutputs(cube Cube) (AnalogDigitalOutputs, error) {
 	var analogDigitalOutputs AnalogDigitalOutputs
 
-	result, err := ReadInputRegister(cube, uint16(64), uint16(5))
+	result, err := ReadInputRegisters(cube, uint16(64), uint16(5))
 	if err != nil {
 		return analogDigitalOutputs, err
 	} else if len(result) != 10 {
@@ -147,4 +147,64 @@ func GetAnalogDigitalOutputs(cube Cube) (AnalogDigitalOutputs, error) {
 	analogDigitalOutputs.U2Digital = u2Digital
 
 	return analogDigitalOutputs, nil
+}
+
+func GetDeviceStatuses(cube Cube) (DeviceStatuses, error) {
+	var deviceStatuses DeviceStatuses
+	result, err := ReadDiscreteInputs(cube, uint16(0), uint16(8))
+	if err != nil {
+		return deviceStatuses, err
+	} else if len(result) != 2 {
+		return deviceStatuses, fmt.Errorf("Invalid byte length: expected 2 bytes for result, but got %v bytes", len(result))
+	}
+	var boolValues []bool
+	for _, byte := range result {
+		for i := 0; i < 8; i++ {
+			boolValues = append(boolValues, (byte&(1<<uint(i))) != 0)
+		}
+	}
+	deviceStatuses.GoodOperatingMode = boolValues[0]
+	deviceStatuses.AnyHardwareFault = boolValues[1]
+	deviceStatuses.MEMSHardwareFault = boolValues[2]
+	deviceStatuses.EEPROMHardwareFault = boolValues[3]
+	deviceStatuses.ConfigurationFault = boolValues[4]
+	deviceStatuses.BootInProgress = boolValues[5]
+	deviceStatuses.DigitalOutputDriverFault = boolValues[6]
+	deviceStatuses.InvalidSetup = boolValues[7]
+
+	return deviceStatuses, nil
+}
+
+func GetChannelStatuses(cube Cube) (ChannelStatuses, error) {
+	var channelStatuses ChannelStatuses
+	result, err := ReadDiscreteInputs(cube, uint16(0), uint16(52))
+	if err != nil {
+		return channelStatuses, err
+	} else if len(result) != 7 {
+		return channelStatuses, fmt.Errorf("Invalid byte length: expected 7 bytes for result, but got %v bytes", len(result))
+	}
+	var boolValues []bool
+	for _, byte := range result {
+		for i := 0; i < 8; i++ {
+			boolValues = append(boolValues, (byte&(1<<uint(i))) != 0)
+		}
+	}
+	channelStatuses.XOn = boolValues[0]
+	channelStatuses.XInvalid = boolValues[1]
+	channelStatuses.XFault = boolValues[2]
+	channelStatuses.XSaturation = boolValues[3]
+	channelStatuses.YOn = boolValues[16]
+	channelStatuses.YInvalid = boolValues[17]
+	channelStatuses.YFault = boolValues[18]
+	channelStatuses.YSaturation = boolValues[19]
+	channelStatuses.ZOn = boolValues[32]
+	channelStatuses.ZInvalid = boolValues[33]
+	channelStatuses.ZFault = boolValues[34]
+	channelStatuses.ZSaturation = boolValues[35]
+	channelStatuses.TOn = boolValues[48]
+	channelStatuses.TInvalid = boolValues[49]
+	channelStatuses.TFault = boolValues[50]
+	channelStatuses.TSaturation = boolValues[51]
+
+	return channelStatuses, nil
 }
