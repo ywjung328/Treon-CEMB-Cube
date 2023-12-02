@@ -177,7 +177,7 @@ func GetDeviceStatuses(cube Cube) (DeviceStatuses, error) {
 
 func GetChannelStatuses(cube Cube) (ChannelStatuses, error) {
 	var channelStatuses ChannelStatuses
-	result, err := ReadDiscreteInputs(cube, uint16(0), uint16(52))
+	result, err := ReadDiscreteInputs(cube, uint16(16), uint16(52))
 	if err != nil {
 		return channelStatuses, err
 	} else if len(result) != 7 {
@@ -207,4 +207,38 @@ func GetChannelStatuses(cube Cube) (ChannelStatuses, error) {
 	channelStatuses.TSaturation = boolValues[51]
 
 	return channelStatuses, nil
+}
+
+func GetMeasurementsStatuses(cube Cube) (MeasurementsStatuses, error) {
+	var measurementsStatuses MeasurementsStatuses
+	result, err := ReadDiscreteInputs(cube, uint16(80), uint16(16))
+	if err != nil {
+		return measurementsStatuses, err
+	} else if len(result) != 3 {
+		return measurementsStatuses, fmt.Errorf("Invalid byte length: expected 3 bytes for result, but got %v bytes", len(result))
+	}
+	var boolValues []bool
+	for _, byte := range result {
+		for i := 0; i < 8; i++ {
+			boolValues = append(boolValues, (byte&(1<<uint(i))) != 0)
+		}
+	}
+	measurementsStatuses.AnyAlert = boolValues[0]
+	measurementsStatuses.AnyVibrationAlert = boolValues[1]
+	measurementsStatuses.AnyAccAlert = boolValues[2]
+	measurementsStatuses.AnyVelAlert = boolValues[3]
+	measurementsStatuses.AnyXAlert = boolValues[4]
+	measurementsStatuses.AnyYAlert = boolValues[5]
+	measurementsStatuses.AnyZAlert = boolValues[6]
+	measurementsStatuses.AccXAlert = boolValues[7]
+	measurementsStatuses.AccYAlert = boolValues[8]
+	measurementsStatuses.AccZAlert = boolValues[9]
+	measurementsStatuses.VelXAlert = boolValues[10]
+	measurementsStatuses.VelYAlert = boolValues[11]
+	measurementsStatuses.VelZAlert = boolValues[12]
+	measurementsStatuses.AccMaxAlert = boolValues[13]
+	measurementsStatuses.VelMaxAlert = boolValues[14]
+	measurementsStatuses.TAlert = boolValues[15]
+
+	return measurementsStatuses, nil
 }
