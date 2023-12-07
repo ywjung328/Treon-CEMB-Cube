@@ -4,4 +4,5 @@ use (
 	.
 	./internal/pkg/cube_config_handler
 	./internal/pkg/cube_modbus_handler
+	./internal/pkg/global
 )
