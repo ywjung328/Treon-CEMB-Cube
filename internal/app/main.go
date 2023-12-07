@@ -2,6 +2,7 @@ package main
 
 import (
 	. "cube_config_handler"
+	. "cube_modbus_handler"
 	"fmt"
 	"global"
 	"log"
@@ -42,10 +43,21 @@ func main() {
 	defer global.LogFile.Close()
 	defer global.Logger.Sync()
 
-	conf, err := ReadConfig("./conf.yaml")
+	var err error
+
+	global.Conf, err = ReadConfig("./conf.yaml")
 	if err != nil {
-		fmt.Println(err)
+		global.Logger.Panic(fmt.Sprintf("Reading config file failed: %v", err))
 	}
-	fmt.Println(conf)
-	global.Logger.Info("WOW")
+	global.Logger.Info("Reading config file done.")
+	cubes := global.Conf.Cubes
+
+	for _, cube := range cubes {
+		realTimeMeasurements, err := GetRealTimeMeasurements(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching realtime measurements from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
+		fmt.Println(realTimeMeasurements)
+	}
 }
