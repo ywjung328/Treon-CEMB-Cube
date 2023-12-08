@@ -3,6 +3,7 @@ package main
 import (
 	. "cube_config_handler"
 	. "cube_modbus_handler"
+	"encoding/json"
 	"fmt"
 	"global"
 	"log"
@@ -50,14 +51,55 @@ func main() {
 		global.Logger.Panic(fmt.Sprintf("Reading config file failed: %v", err))
 	}
 	global.Logger.Info("Reading config file done.")
-	cubes := global.Conf.Cubes
+	// cubes := global.Conf.Cubes
+	testPrint()
+}
 
-	for _, cube := range cubes {
-		realTimeMeasurements, err := GetDeviceStatuses(cube)
+func testPrint() {
+	for _, cube := range global.Conf.Cubes {
+		realTimeMeasurements, err := GetRealTimeMeasurements(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching realtime measurements from cube '%v' failed: %v", cube.Name, err))
 			continue
 		}
-		fmt.Println(realTimeMeasurements)
+		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
+		res, _ := json.Marshal(realTimeMeasurements)
+		fmt.Println(string(res))
+
+		analogDigitalOutputs, err := GetAnalogDigitalOutputs(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching analog digital outputs from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
+		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
+		res, _ = json.Marshal(analogDigitalOutputs)
+		fmt.Println(string(res))
+
+		deviceStatuses, err := GetDeviceStatuses(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching device statuses from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
+		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
+		res, _ = json.Marshal(deviceStatuses)
+		fmt.Println(string(res))
+
+		channelStatuses, err := GetChannelStatuses(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching channel statuses from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
+		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
+		res, _ = json.Marshal(channelStatuses)
+		fmt.Println(string(res))
+
+		measurementsStatuses, err := GetMeasurementsStatuses(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching measurements statuses from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
+		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
+		res, _ = json.Marshal(measurementsStatuses)
+		fmt.Println(string(res))
 	}
 }

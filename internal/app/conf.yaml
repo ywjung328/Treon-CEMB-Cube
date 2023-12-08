@@ -6,11 +6,12 @@ publish_port: 5051
 subscribe_port: 5052
 
 # CUBE Configurations
+modbus_timeout: 5 # seconds
 cubes:
   - name: CUBE4
     ip: 10.10.10.104
     port: 502
-    slave_id: 4
+    slave_id: 1
   # - name: CUBE3
   #   ip: 10.10.10.103
   #   port: 502

@@ -3,6 +3,8 @@ package cube_modbus_handler
 import (
 	. "cube_config_handler"
 	"fmt"
+	. "global"
+	"time"
 
 	"github.com/goburrow/modbus"
 )
@@ -10,7 +12,7 @@ import (
 func ReadHoldingRegisters(cube Cube, address, quantity uint16) ([]byte, error) {
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%v:%v", cube.IP, cube.Port))
 	handler.SlaveId = byte(cube.SlaveId)
-	handler.Timeout = 5
+	handler.Timeout = time.Duration(Conf.ModbusTimeout) * time.Second
 
 	err := handler.Connect()
 	defer handler.Close()
@@ -31,7 +33,7 @@ func ReadHoldingRegisters(cube Cube, address, quantity uint16) ([]byte, error) {
 func ReadInputRegisters(cube Cube, address, quantity uint16) ([]byte, error) {
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%v:%v", cube.IP, cube.Port))
 	handler.SlaveId = byte(cube.SlaveId)
-	handler.Timeout = 5
+	handler.Timeout = time.Duration(Conf.ModbusTimeout) * time.Second
 
 	err := handler.Connect()
 	defer handler.Close()
@@ -53,7 +55,7 @@ func ReadInputRegisters(cube Cube, address, quantity uint16) ([]byte, error) {
 func ReadCoils(cube Cube, address, quantity uint16) ([]byte, error) {
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%v:%v", cube.IP, cube.Port))
 	handler.SlaveId = byte(cube.SlaveId)
-	handler.Timeout = 5
+	handler.Timeout = time.Duration(Conf.ModbusTimeout) * time.Second
 
 	err := handler.Connect()
 	defer handler.Close()
@@ -74,7 +76,7 @@ func ReadCoils(cube Cube, address, quantity uint16) ([]byte, error) {
 func ReadDiscreteInputs(cube Cube, address, quantity uint16) ([]byte, error) {
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%v:%v", cube.IP, cube.Port))
 	handler.SlaveId = byte(cube.SlaveId)
-	handler.Timeout = 5
+	handler.Timeout = time.Duration(Conf.ModbusTimeout) * time.Second
 
 	err := handler.Connect()
 	defer handler.Close()

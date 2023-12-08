@@ -11,7 +11,8 @@ func byteArrayToFloat32(data []byte) (float32, error) {
 	if len(data) != 4 {
 		return float32(0), fmt.Errorf("Invalid byte length: expected 4 bytes for float32, but got %v bytes", len(data))
 	}
-	bits := binary.BigEndian.Uint32(data)
+	// slices.Reverse(data)
+	bits := binary.BigEndian.Uint32([]byte{data[2], data[3], data[0], data[1]})
 
 	return math.Float32frombits(bits), nil
 }
@@ -20,7 +21,7 @@ func byteArrayToUint16(data []byte) (uint16, error) {
 	if len(data) != 2 {
 		return uint16(0), fmt.Errorf("Invalid byte length: expected 2 bytes for uint16, but got %v bytes", len(data))
 	}
-
+	// slices.Reverse(data)
 	return binary.BigEndian.Uint16(data), nil
 }
 
@@ -33,19 +34,19 @@ func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 	} else if len(accResult) != 16 {
 		return realTimeMeasurements, fmt.Errorf("Invalid byte length: expected 16 bytes for accResult, but got %v bytes", len(accResult))
 	}
-	accX, err := byteArrayToFloat32(accResult[0:3])
+	accX, err := byteArrayToFloat32(accResult[0:4])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	accY, err := byteArrayToFloat32(accResult[4:7])
+	accY, err := byteArrayToFloat32(accResult[4:8])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	accZ, err := byteArrayToFloat32(accResult[8:11])
+	accZ, err := byteArrayToFloat32(accResult[8:12])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	accMax, err := byteArrayToFloat32(accResult[12:15])
+	accMax, err := byteArrayToFloat32(accResult[12:16])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
@@ -60,19 +61,19 @@ func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 	} else if len(velResult) != 16 {
 		return realTimeMeasurements, fmt.Errorf("Invalid byte length: expected 16 bytes for velResult, but got %v bytes", len(velResult))
 	}
-	velX, err := byteArrayToFloat32(accResult[0:3])
+	velX, err := byteArrayToFloat32(velResult[0:4])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velY, err := byteArrayToFloat32(accResult[4:7])
+	velY, err := byteArrayToFloat32(velResult[4:8])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velZ, err := byteArrayToFloat32(accResult[8:11])
+	velZ, err := byteArrayToFloat32(velResult[8:12])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velMax, err := byteArrayToFloat32(accResult[12:15])
+	velMax, err := byteArrayToFloat32(velResult[12:16])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
@@ -87,27 +88,27 @@ func GetRealTimeMeasurements(cube Cube) (RealTimeMeasurements, error) {
 	} else if len(otherResult) != 24 {
 		return realTimeMeasurements, fmt.Errorf("Invalid byte length: expected 24 bytes for otherResult, but got %v bytes", len(velResult))
 	}
-	t, err := byteArrayToFloat32(otherResult[0:3])
+	t, err := byteArrayToFloat32(otherResult[0:4])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	shaftSpeed, err := byteArrayToFloat32(otherResult[4:7])
+	shaftSpeed, err := byteArrayToFloat32(otherResult[4:8])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velDAUnbalanced, err := byteArrayToFloat32(otherResult[8:11])
+	velDAUnbalanced, err := byteArrayToFloat32(otherResult[8:12])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velDAMisalignment, err := byteArrayToFloat32(otherResult[12:15])
+	velDAMisalignment, err := byteArrayToFloat32(otherResult[12:16])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velDALooseness, err := byteArrayToFloat32(otherResult[16:19])
+	velDALooseness, err := byteArrayToFloat32(otherResult[16:20])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
-	velDAOther, err := byteArrayToFloat32(otherResult[20:23])
+	velDAOther, err := byteArrayToFloat32(otherResult[20:24])
 	if err != nil {
 		return realTimeMeasurements, err
 	}
@@ -130,15 +131,15 @@ func GetAnalogDigitalOutputs(cube Cube) (AnalogDigitalOutputs, error) {
 	} else if len(result) != 10 {
 		return analogDigitalOutputs, fmt.Errorf("Invalid byte length: expected 10 bytes for result, but got %v bytes", len(result))
 	}
-	u1Analog, err := byteArrayToFloat32(result[0:3])
+	u1Analog, err := byteArrayToFloat32(result[0:4])
 	if err != nil {
 		return analogDigitalOutputs, err
 	}
-	u2Analog, err := byteArrayToFloat32(result[4:7])
+	u2Analog, err := byteArrayToFloat32(result[4:8])
 	if err != nil {
 		return analogDigitalOutputs, err
 	}
-	u2Digital, err := byteArrayToUint16(result[8:9])
+	u2Digital, err := byteArrayToUint16(result[8:10])
 	if err != nil {
 		return analogDigitalOutputs, err
 	}
@@ -154,8 +155,8 @@ func GetDeviceStatuses(cube Cube) (DeviceStatuses, error) {
 	result, err := ReadDiscreteInputs(cube, uint16(0), uint16(8))
 	if err != nil {
 		return deviceStatuses, err
-	} else if len(result) != 2 {
-		return deviceStatuses, fmt.Errorf("Invalid byte length: expected 2 bytes for result, but got %v bytes", len(result))
+	} else if len(result) != 1 {
+		return deviceStatuses, fmt.Errorf("Invalid byte length: expected 1 bytes for result, but got %v bytes", len(result))
 	}
 	var boolValues []bool
 	for _, byte := range result {
@@ -214,8 +215,8 @@ func GetMeasurementsStatuses(cube Cube) (MeasurementsStatuses, error) {
 	result, err := ReadDiscreteInputs(cube, uint16(80), uint16(16))
 	if err != nil {
 		return measurementsStatuses, err
-	} else if len(result) != 3 {
-		return measurementsStatuses, fmt.Errorf("Invalid byte length: expected 3 bytes for result, but got %v bytes", len(result))
+	} else if len(result) != 2 {
+		return measurementsStatuses, fmt.Errorf("Invalid byte length: expected 2 bytes for result, but got %v bytes", len(result))
 	}
 	var boolValues []bool
 	for _, byte := range result {
