@@ -8,5 +8,7 @@ type Cube struct {
 }
 
 type CubeConfig struct {
-	Cubes []Cube `yaml:"cubes"`
+	PublishPort   int    `yaml:"publish_port"`
+	SubscribePort int    `yaml:"subscribe_port"`
+	Cubes         []Cube `yaml:"cubes"`
 }

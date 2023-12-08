@@ -53,7 +53,7 @@ func main() {
 	cubes := global.Conf.Cubes
 
 	for _, cube := range cubes {
-		realTimeMeasurements, err := GetRealTimeMeasurements(cube)
+		realTimeMeasurements, err := GetDeviceStatuses(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching realtime measurements from cube '%v' failed: %v", cube.Name, err))
 			continue

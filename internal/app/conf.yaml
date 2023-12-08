@@ -1,6 +1,11 @@
 #!syntax yaml
 
-# Network Configurations
+# Treon G/W Configuration
+# No IP address definition since it runs locally
+publish_port: 5051
+subscribe_port: 5052
+
+# CUBE Configurations
 cubes:
   - name: CUBE4
     ip: 10.10.10.104
