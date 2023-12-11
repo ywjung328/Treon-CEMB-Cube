@@ -6,6 +6,7 @@ publish_port: 5051
 subscribe_port: 5052
 
 # CUBE Configurations
+scalar_cycle: 10 # seconds
 modbus_timeout: 5 # seconds
 cubes:
   - name: CUBE4

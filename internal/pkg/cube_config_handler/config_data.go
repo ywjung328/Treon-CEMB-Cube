@@ -11,5 +11,6 @@ type CubeConfig struct {
 	PublishPort   int    `yaml:"publish_port"`
 	SubscribePort int    `yaml:"subscribe_port"`
 	Cubes         []Cube `yaml:"cubes"`
+	ScalarCycle   int    `yaml:"scalar_cycle"`
 	ModbusTimeout int    `yaml:"modbus_timeout"`
 }

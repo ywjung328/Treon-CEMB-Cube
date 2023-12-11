@@ -5,11 +5,13 @@ import (
 
 	. "cube_config_handler"
 
+	"github.com/pebbe/zmq4"
 	"go.uber.org/zap"
 )
 
 var (
-	LogFile *os.File
-	Logger  *zap.Logger
-	Conf    CubeConfig
+	LogFile               *os.File
+	Logger                *zap.Logger
+	Conf                  CubeConfig
+	Publisher, Subscriber *zmq4.Socket
 )
