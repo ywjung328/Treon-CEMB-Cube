@@ -1,0 +1,34 @@
+{
+    "Temperature": 29.66,
+    "Vibration": {
+      "RMS": {
+        "X": 3
+      },
+      "Z2P": {
+        "X": 11
+      },
+      "P2P": {
+        "X": 23
+      },
+      "UsedRange": {
+        "X": 2
+      }
+    },
+    "Timestamp": 1689926055,
+    "SensorNodeId": "0406e8cf",
+    "SourceAddress": "13625348",
+    "GatewayId": "f91897d4",
+    "MeasDetails": {
+      "Filter": {
+        "LowCutoff": 100,
+        "Decimation": 1,
+        "Type": 3,
+        "CalcId": 1,
+        "HighCutoff": 10000
+      },
+      "G-range": 4,
+      "Trigger": 1,
+      "Id": 2047
+    },
+    "Type": "scalar"
+  }

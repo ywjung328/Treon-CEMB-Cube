@@ -9,6 +9,10 @@ import (
 	"go.uber.org/zap"
 )
 
+const (
+	Filter = "CUBE"
+)
+
 var (
 	LogFile               *os.File
 	Logger                *zap.Logger

@@ -3,7 +3,7 @@ go 1.21.4
 use (
 	.
 	./internal/pkg/cube_config_handler
-	./internal/pkg/cube_modbus_handler
+	./internal/pkg/cube_data_handler
 	./internal/pkg/global
 	./internal/pkg/network_handler
 )

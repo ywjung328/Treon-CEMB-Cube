@@ -1,4 +1,4 @@
-package cube_modbus_handler
+package cube_data_handler
 
 import (
 	. "cube_config_handler"

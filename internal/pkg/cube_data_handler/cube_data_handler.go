@@ -1,10 +1,15 @@
-package cube_modbus_handler
+package cube_data_handler
 
 import (
 	. "cube_config_handler"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
+	"reflect"
+
+	"github.com/fxamacker/cbor/v2"
 )
 
 func byteArrayToFloat32(data []byte) (float32, error) {
@@ -242,4 +247,70 @@ func GetMeasurementsStatuses(cube Cube) (MeasurementsStatuses, error) {
 	measurementsStatuses.TAlert = boolValues[15]
 
 	return measurementsStatuses, nil
+}
+
+func GetVectorialMeasures(cube Cube) (VectorialMeasures, error) {
+	var vectorialMeasures VectorialMeasures
+	url := fmt.Sprintf("http://%v/rawdata.cbor", cube.IP)
+	resp, err := http.Get(url)
+	if err != nil {
+		return vectorialMeasures, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return vectorialMeasures, fmt.Errorf("Bad status code while fetching vectorial measures: %v", resp.StatusCode)
+	}
+	cborData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return vectorialMeasures, err
+	}
+	var decodedData map[string]interface{}
+	err = cbor.Unmarshal(cborData, &decodedData)
+	if err != nil {
+		return vectorialMeasures, err
+	}
+
+	// DATA CASTING
+	vmUnit, ok := decodedData["unit"].(string)
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'unit' from vectorial measures")
+	}
+	vmValuesX, ok := decodedData["values_x"].(cbor.Tag)
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'values_x' from vectorial measures: failed casting")
+	} else if reflect.TypeOf(vmValuesX.Content).String() != "[]uint8" {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'values_x' from vectorial measures: type not []uint8")
+	}
+	vmValuesY, ok := decodedData["values_y"].(cbor.Tag)
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'values_y' from vectorial measures: failed casting")
+	} else if reflect.TypeOf(vmValuesY.Content).String() != "[]uint8" {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'values_y' from vectorial measures: type not []uint8")
+	}
+	vmValuesZ, ok := decodedData["values_z"].(cbor.Tag)
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'values_z' from vectorial measures: failed casting")
+	} else if reflect.TypeOf(vmValuesY.Content).String() != "[]uint8" {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'values_z' from vectorial measures: type not []uint8")
+	}
+	vmDtRaw, ok := decodedData["dt"].(map[interface{}]interface{})
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing 'dt' from vectorial measures")
+	}
+	vmDtUnit, ok := vmDtRaw["unit"].(string)
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing / casting 'dt'->'unit' from vectorial measures")
+	}
+	vmDtValue, ok := vmDtRaw["value"].(float64)
+	if !ok {
+		return vectorialMeasures, fmt.Errorf("Failed parsing / casting 'dt'->'value' from vectorial measures")
+	}
+
+	vectorialMeasures.Unit = vmUnit
+	vectorialMeasures.ValuesX = vmValuesX.Content.([]uint8)
+	vectorialMeasures.ValuesY = vmValuesY.Content.([]uint8)
+	vectorialMeasures.ValuesZ = vmValuesZ.Content.([]uint8)
+	vectorialMeasures.Dt = dt{Unit: vmDtUnit, Value: vmDtValue}
+
+	return vectorialMeasures, nil
 }

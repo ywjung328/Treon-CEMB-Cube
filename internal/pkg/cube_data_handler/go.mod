@@ -1,4 +1,4 @@
-module cube_modbus_handler
+module cube_data_handler
 
 go 1.21.4
 

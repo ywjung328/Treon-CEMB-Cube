@@ -9,10 +9,6 @@ import (
 
 var err error
 
-const (
-	filter = "CUBE"
-)
-
 func InitZeroMQ() error {
 	global.Publisher, err = zmq4.NewSocket(zmq4.PUB)
 	if err != nil {
@@ -30,9 +26,9 @@ func InitZeroMQ() error {
 	if err != nil {
 		return fmt.Errorf("Connecting zmq4 subscriber to tcp://localhost:%v failed: %v", global.Conf.SubscribePort, err)
 	}
-	err = global.Subscriber.SetSubscribe(filter)
+	err = global.Subscriber.SetSubscribe(global.Filter)
 	if err != nil {
-		return fmt.Errorf("Setting subscribtion (filter: %v) failed: %v", filter, err)
+		return fmt.Errorf("Setting subscribtion (filter: %v) failed: %v", global.Filter, err)
 	}
 	return nil
 }

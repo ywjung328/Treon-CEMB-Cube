@@ -8,6 +8,7 @@ type Cube struct {
 }
 
 type CubeConfig struct {
+	GatewayId     string `yaml:"gateway_id"`
 	PublishPort   int    `yaml:"publish_port"`
 	SubscribePort int    `yaml:"subscribe_port"`
 	Cubes         []Cube `yaml:"cubes"`

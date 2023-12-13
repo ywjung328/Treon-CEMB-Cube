@@ -1,4 +1,4 @@
-package cube_modbus_handler
+package cube_data_handler
 
 type RealTimeMeasurements struct {
 	AccX              float32
@@ -70,4 +70,17 @@ type MeasurementsStatuses struct {
 	AccMaxAlert       bool
 	VelMaxAlert       bool
 	TAlert            bool
+}
+
+type dt struct {
+	Unit  string
+	Value float64
+}
+
+type VectorialMeasures struct {
+	Dt      dt
+	Unit    string
+	ValuesX []uint8
+	ValuesY []uint8
+	ValuesZ []uint8
 }

@@ -4,9 +4,10 @@
 # No IP address definition since it runs locally
 publish_port: 5051
 subscribe_port: 5052
+gateway_id: f91897d4
 
 # CUBE Configurations
-scalar_cycle: 10 # seconds
+scalar_cycle: 1000 # milliseconds
 modbus_timeout: 5 # seconds
 cubes:
   - name: CUBE4
