@@ -8,6 +8,7 @@ gateway_id: f91897d4
 
 # CUBE Configurations
 scalar_cycle: 1000 # milliseconds
+vector_cycle: 5000 # milliseconds
 modbus_timeout: 5 # seconds
 cubes:
   - name: CUBE4

@@ -1,5 +1,10 @@
 package cube_data_handler
 
+import (
+	"fmt"
+	"strings"
+)
+
 type RealTimeMeasurements struct {
 	AccX              float32
 	AccY              float32
@@ -80,7 +85,19 @@ type dt struct {
 type VectorialMeasures struct {
 	Dt      dt
 	Unit    string
-	ValuesX []uint8
-	ValuesY []uint8
-	ValuesZ []uint8
+	ValuesX JSONasbleSlice
+	ValuesY JSONasbleSlice
+	ValuesZ JSONasbleSlice
+}
+
+type JSONasbleSlice []uint8
+
+func (u JSONasbleSlice) MarshalJSON() ([]byte, error) {
+	var result string
+	if u == nil {
+		result = "null"
+	} else {
+		result = strings.Join(strings.Fields(fmt.Sprintf("%d", u)), ", ")
+	}
+	return []byte(result), nil
 }
