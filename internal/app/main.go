@@ -78,6 +78,7 @@ func main() {
 }
 
 func publish() {
+	fmt.Println("PUBLISHER INITIATED")
 	ticker := time.NewTicker(time.Duration(global.Conf.ScalarCycle) * time.Millisecond)
 	defer ticker.Stop()
 
@@ -102,6 +103,7 @@ func publish() {
 }
 
 func subscribe() {
+	fmt.Println("SUBSCRIBER INITIATED")
 	for {
 		message, err := global.Subscriber.Recv(0)
 		if err != nil {
