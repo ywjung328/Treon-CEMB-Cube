@@ -12,7 +12,7 @@ func TreonRTMConverter(realTimeMeasurements RealTimeMeasurements, cube Cube) str
 	now := time.Now()
 	ts := now.Unix()
 
-	var data map[string]interface{}
+	data := make(map[string]interface{})
 	data["Temperature"] = realTimeMeasurements.T
 	data["ShaftSpeed"] = realTimeMeasurements.ShaftSpeed
 	data["Timestamp"] = ts
