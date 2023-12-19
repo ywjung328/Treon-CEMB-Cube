@@ -16,12 +16,13 @@ import (
 )
 
 func init() {
-	now := time.Now()
 	err := os.MkdirAll("logs", os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
-	global.LogFile, err = os.Create(fmt.Sprintf("logs/log_%v.log", now.Format(time.RFC3339)))
+	// now := time.Now()
+	// global.LogFile, err = os.Create(fmt.Sprintf("logs/log_%v.log", now.Format(time.RFC3339)))
+	global.LogFile, err = os.Create("logs/log.log")
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +40,10 @@ func init() {
 	)
 
 	global.Logger = zap.New(fileCore)
-	InitZeroMQ()
+	err = InitZeroMQ()
+	if err != nil {
+		global.Logger.Warn(fmt.Sprintf("ZeroMQ initiation failed: %v", err))
+	}
 }
 
 func main() {
@@ -61,16 +65,16 @@ func main() {
 	defer scalarTicker.Stop()
 	defer vectorTicker.Stop()
 
-	for {
-		select {
-		case <-scalarTicker.C:
-			go scalarPrint()
-		case <-vectorTicker.C:
-			go vectorPrint()
-		}
-	}
-	// go publish()
-	// go subscribe()
+	// for {
+	// 	select {
+	// 	case <-scalarTicker.C:
+	// 		go scalarPrint()
+	// 	case <-vectorTicker.C:
+	// 		go vectorPrint()
+	// 	}
+	// }
+	go publish()
+	go subscribe()
 }
 
 func publish() {
@@ -112,6 +116,11 @@ func scalarPrint() {
 	// now := time.Now()
 	// global.Logger.Info(fmt.Sprintf("timestamp: %v", now))
 	for _, cube := range global.Conf.Cubes {
+		serialNumber, err := GetSerialNumber(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching S/N from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
 		realTimeMeasurements, err := GetRealTimeMeasurements(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching realtime measurements from cube '%v' failed: %v", cube.Name, err))
@@ -120,7 +129,6 @@ func scalarPrint() {
 		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		// res, _ := json.Marshal(realTimeMeasurements)
 		// global.Logger.Info(string(res))
-
 		analogDigitalOutputs, err := GetAnalogDigitalOutputs(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching analog digital outputs from cube '%v' failed: %v", cube.Name, err))
@@ -129,7 +137,6 @@ func scalarPrint() {
 		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		// res, _ = json.Marshal(analogDigitalOutputs)
 		// global.Logger.Info(string(res))
-
 		deviceStatuses, err := GetDeviceStatuses(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching device statuses from cube '%v' failed: %v", cube.Name, err))
@@ -138,7 +145,6 @@ func scalarPrint() {
 		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		// res, _ = json.Marshal(deviceStatuses)
 		// global.Logger.Info(string(res))
-
 		channelStatuses, err := GetChannelStatuses(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching channel statuses from cube '%v' failed: %v", cube.Name, err))
@@ -147,7 +153,6 @@ func scalarPrint() {
 		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		// res, _ = json.Marshal(channelStatuses)
 		// global.Logger.Info(string(res))
-
 		measurementsStatuses, err := GetMeasurementsStatuses(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching measurements statuses from cube '%v' failed: %v", cube.Name, err))
@@ -157,6 +162,7 @@ func scalarPrint() {
 		// res, _ = json.Marshal(measurementsStatuses)
 		// global.Logger.Info(string(res))
 		data := make(map[string]interface{})
+		data["SerialNumber"] = serialNumber
 		data["RealTimeMeasurements"] = realTimeMeasurements
 		data["AnalogDigitalOutputs"] = analogDigitalOutputs
 		data["DeviceStatuses"] = deviceStatuses
@@ -169,6 +175,11 @@ func scalarPrint() {
 
 func vectorPrint() {
 	for _, cube := range global.Conf.Cubes {
+		serialNumber, err := GetSerialNumber(cube)
+		if err != nil {
+			global.Logger.Warn(fmt.Sprintf("Fetching S/N from cube '%v' failed: %v", cube.Name, err))
+			continue
+		}
 		vectorialMeasures, err := GetVectorialMeasures(cube)
 		if err != nil {
 			global.Logger.Warn(fmt.Sprintf("Fetching vectorial measures from cube '%v' failed: %v", cube.Name, err))
@@ -176,6 +187,7 @@ func vectorPrint() {
 		}
 		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		data := make(map[string]interface{})
+		data["SerialNumber"] = serialNumber
 		data["VectorialMeasures"] = vectorialMeasures
 		// res, _ := json.Marshal(vectorialMeasures)
 		res, _ := json.Marshal(data)

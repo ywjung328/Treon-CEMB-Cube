@@ -314,3 +314,18 @@ func GetVectorialMeasures(cube Cube) (VectorialMeasures, error) {
 
 	return vectorialMeasures, nil
 }
+
+func GetSerialNumber(cube Cube) (string, error) {
+	var serialNumber string
+	result, err := ReadHoldingRegisters(cube, uint16(17), uint16(4))
+	if err != nil {
+		return serialNumber, err
+	}
+	// for i := 0; i < len(result); i += 2 {
+	// 	temp := result[i]
+	// 	result[i] = result[i+1]
+	// 	result[i+1] = temp
+	// }
+	serialNumber = string(result)
+	return serialNumber, nil
+}
