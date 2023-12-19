@@ -94,9 +94,11 @@ func publish() {
 				data := TreonRTMConverter(realTimeMeasurements, cube)
 				_, err = global.Publisher.Send(data, 0)
 				if err != nil {
+					fmt.Println(err)
 					global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
 					continue
 				}
+				fmt.Println("PUBLISH SUCCEEDED")
 			}
 		}
 	}
