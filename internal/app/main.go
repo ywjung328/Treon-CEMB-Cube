@@ -75,7 +75,7 @@ func main() {
 	// 		go vectorPrint()
 	// 	}
 	// }
-	go publish()
+	publish()
 	// go subscribe()
 }
 
