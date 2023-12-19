@@ -43,6 +43,8 @@ func init() {
 	err = InitZeroMQ()
 	if err != nil {
 		global.Logger.Warn(fmt.Sprintf("ZeroMQ initiation failed: %v", err))
+	} else {
+		global.Logger.Info("ZeroMQ initiated successfully.")
 	}
 }
 
@@ -74,7 +76,7 @@ func main() {
 	// 	}
 	// }
 	go publish()
-	go subscribe()
+	// go subscribe()
 }
 
 func publish() {
