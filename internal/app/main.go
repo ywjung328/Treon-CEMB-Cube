@@ -7,10 +7,12 @@ import (
 	"fmt"
 	"global"
 	"log"
-	. "network_handler"
+
+	// . "network_handler"
 	"os"
 	"time"
 
+	"github.com/pebbe/zmq4"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -40,7 +42,7 @@ func init() {
 	)
 
 	global.Logger = zap.New(fileCore)
-	err = InitZeroMQ()
+	// err = InitZeroMQ()
 	if err != nil {
 		global.Logger.Warn(fmt.Sprintf("ZeroMQ initiation failed: %v", err))
 	} else {
@@ -66,6 +68,36 @@ func main() {
 	vectorTicker := time.NewTicker(time.Duration(global.Conf.VectorCycle) * time.Millisecond)
 	defer scalarTicker.Stop()
 	defer vectorTicker.Stop()
+
+	// INITIATING ZMQ4
+	context, err := zmq4.NewContext()
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Creating zmq4 context failed: %v", err))
+	}
+	global.Publisher, err = context.NewSocket(zmq4.PUB)
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Creating zmq4 publisher failed: %v", err))
+	}
+	global.Subscriber, err = context.NewSocket(zmq4.SUB)
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Creating zmq4 subscriber failed: %v", err))
+	}
+	err = global.Publisher.Bind(fmt.Sprintf("tcp://*:%v", global.Conf.PublishPort))
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Binding zmq4 publisher to tcp://*:%v failed: %v", global.Conf.PublishPort, err))
+	}
+	err = global.Subscriber.Connect(fmt.Sprintf("tcp://localhost:%v", global.Conf.SubscribePort))
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Connecting zmq4 subscriber to tcp://localhost:%v failed: %v", global.Conf.SubscribePort, err))
+	}
+	err = global.Subscriber.SetSubscribe(global.Conf.Filter)
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Setting subscribtion (filter: %v) failed: %v", global.Conf.Filter, err))
+	}
+
+	defer context.Term()
+	defer global.Publisher.Close()
+	defer global.Subscriber.Close()
 
 	go subscribe()
 	for {
@@ -177,7 +209,7 @@ func scalarPublish() {
 		res, _ := json.Marshal(data)
 		// global.Logger.Info(string(res))
 		// _, err = global.Publisher.Send(string(res), 0)
-		_, err = global.Publisher.Send(fmt.Sprintf("Hello %v", string(res)), 0)
+		_, err = global.Publisher.Send(fmt.Sprintf("%v %v", global.Conf.Filter, string(res)), 0)
 		if err != nil {
 			fmt.Println(err)
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
@@ -208,7 +240,7 @@ func vectorPublish() {
 		res, _ := json.Marshal(data)
 		// global.Logger.Info(string(res))
 		// _, err = global.Publisher.Send(string(res), 0)
-		_, err = global.Publisher.Send(fmt.Sprintf("Hello %v", string(res)), 0)
+		_, err = global.Publisher.Send(fmt.Sprintf("%v %v", global.Conf.Filter, string(res)), 0)
 		if err != nil {
 			fmt.Println(err)
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))

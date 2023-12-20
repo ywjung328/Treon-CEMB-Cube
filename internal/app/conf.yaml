@@ -10,6 +10,7 @@ gateway_id: f91897d4
 scalar_cycle: 1000 # milliseconds
 vector_cycle: 5000 # milliseconds
 modbus_timeout: 5 # seconds
+filter: cube
 cubes:
   - name: CUBE4
     ip: 10.10.10.104
