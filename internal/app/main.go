@@ -67,20 +67,18 @@ func main() {
 	defer scalarTicker.Stop()
 	defer vectorTicker.Stop()
 
-	// for {
-	// 	select {
-	// 	case <-scalarTicker.C:
-	// 		go scalarPrint()
-	// 	case <-vectorTicker.C:
-	// 		go vectorPrint()
-	// 	}
-	// }
-	publish()
-	// go subscribe()
+	go subscribe()
+	for {
+		select {
+		case <-scalarTicker.C:
+			go scalarPublish()
+		case <-vectorTicker.C:
+			go vectorPublish()
+		}
+	}
 }
 
 func publish() {
-	fmt.Println("PUBLISHER INITIATED")
 	ticker := time.NewTicker(time.Duration(global.Conf.ScalarCycle) * time.Millisecond)
 	defer ticker.Stop()
 
@@ -100,7 +98,6 @@ func publish() {
 					global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
 					continue
 				}
-				fmt.Println("PUBLISH SUCCEEDED")
 			}
 		}
 	}
@@ -118,7 +115,7 @@ func subscribe() {
 	}
 }
 
-func scalarPrint() {
+func scalarPublish() {
 	// now := time.Now()
 	// global.Logger.Info(fmt.Sprintf("timestamp: %v", now))
 	for _, cube := range global.Conf.Cubes {
@@ -168,6 +165,7 @@ func scalarPrint() {
 		// res, _ = json.Marshal(measurementsStatuses)
 		// global.Logger.Info(string(res))
 		data := make(map[string]interface{})
+		data["Timestamp"] = time.Now().Unix()
 		data["SerialNumber"] = serialNumber
 		data["RealTimeMeasurements"] = realTimeMeasurements
 		data["AnalogDigitalOutputs"] = analogDigitalOutputs
@@ -175,11 +173,17 @@ func scalarPrint() {
 		data["ChannelStatuses"] = channelStatuses
 		data["MeasurementStatuses"] = measurementsStatuses
 		res, _ := json.Marshal(data)
-		global.Logger.Info(string(res))
+		// global.Logger.Info(string(res))
+		_, err = global.Publisher.Send(string(res), 0)
+		if err != nil {
+			fmt.Println(err)
+			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
+			continue
+		}
 	}
 }
 
-func vectorPrint() {
+func vectorPublish() {
 	for _, cube := range global.Conf.Cubes {
 		serialNumber, err := GetSerialNumber(cube)
 		if err != nil {
@@ -193,10 +197,17 @@ func vectorPrint() {
 		}
 		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		data := make(map[string]interface{})
+		data["Timestamp"] = time.Now().Unix()
 		data["SerialNumber"] = serialNumber
 		data["VectorialMeasures"] = vectorialMeasures
 		// res, _ := json.Marshal(vectorialMeasures)
 		res, _ := json.Marshal(data)
-		global.Logger.Info(string(res))
+		// global.Logger.Info(string(res))
+		_, err = global.Publisher.Send(string(res), 0)
+		if err != nil {
+			fmt.Println(err)
+			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
+			continue
+		}
 	}
 }
