@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	Filter = "CUBE"
+	Filter = "cube"
 )
 
 var (

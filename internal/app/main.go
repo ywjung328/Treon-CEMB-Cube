@@ -113,6 +113,7 @@ func subscribe() {
 			continue
 		}
 		global.Logger.Info(fmt.Sprintf("ZeroMQ: Received: %v", message))
+		fmt.Println(fmt.Sprintf("ZeroMQ: Received: %v", message))
 	}
 }
 
