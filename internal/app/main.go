@@ -67,21 +67,15 @@ func main() {
 	defer scalarTicker.Stop()
 	defer vectorTicker.Stop()
 
-	// go subscribe()
-	// for {
-	// 	select {
-	// 	case <-scalarTicker.C:
-	// 		go scalarPublish()
-	// 	case <-vectorTicker.C:
-	// 		go vectorPublish()
-	// 	}
-	// }
-	fmt.Printf("Let's send to: %v!\n", global.Conf.PublishPort)
-	size, err := global.Publisher.Send("Hello world!", 0)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
+	go subscribe()
+	for {
+		select {
+		case <-scalarTicker.C:
+			go scalarPublish()
+		case <-vectorTicker.C:
+			go vectorPublish()
+		}
 	}
-	fmt.Printf("size: %v\n", size)
 }
 
 /*
@@ -182,7 +176,8 @@ func scalarPublish() {
 		data["MeasurementStatuses"] = measurementsStatuses
 		res, _ := json.Marshal(data)
 		// global.Logger.Info(string(res))
-		_, err = global.Publisher.Send(string(res), 0)
+		// _, err = global.Publisher.Send(string(res), 0)
+		_, err = global.Publisher.Send(fmt.Sprintf("Hello %v", string(res)), 0)
 		if err != nil {
 			fmt.Println(err)
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
@@ -212,7 +207,8 @@ func vectorPublish() {
 		// res, _ := json.Marshal(vectorialMeasures)
 		res, _ := json.Marshal(data)
 		// global.Logger.Info(string(res))
-		_, err = global.Publisher.Send(string(res), 0)
+		// _, err = global.Publisher.Send(string(res), 0)
+		_, err = global.Publisher.Send(fmt.Sprintf("Hello %v", string(res)), 0)
 		if err != nil {
 			fmt.Println(err)
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
