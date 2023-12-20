@@ -67,15 +67,21 @@ func main() {
 	defer scalarTicker.Stop()
 	defer vectorTicker.Stop()
 
-	go subscribe()
-	for {
-		select {
-		case <-scalarTicker.C:
-			go scalarPublish()
-		case <-vectorTicker.C:
-			go vectorPublish()
-		}
+	// go subscribe()
+	// for {
+	// 	select {
+	// 	case <-scalarTicker.C:
+	// 		go scalarPublish()
+	// 	case <-vectorTicker.C:
+	// 		go vectorPublish()
+	// 	}
+	// }
+	fmt.Printf("Let's send to: %v!\n", global.Conf.PublishPort)
+	size, err := global.Publisher.Send("Hello", 0)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
 	}
+	fmt.Printf("size: %v\n", size)
 }
 
 /*
