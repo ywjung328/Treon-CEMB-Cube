@@ -77,7 +77,7 @@ func main() {
 	// 	}
 	// }
 	fmt.Printf("Let's send to: %v!\n", global.Conf.PublishPort)
-	size, err := global.Publisher.Send("Hello", 0)
+	size, err := global.Publisher.Send("Hello world!", 0)
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
