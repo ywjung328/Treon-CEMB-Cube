@@ -78,6 +78,7 @@ func main() {
 	}
 }
 
+/*
 func publish() {
 	ticker := time.NewTicker(time.Duration(global.Conf.ScalarCycle) * time.Millisecond)
 	defer ticker.Stop()
@@ -102,9 +103,9 @@ func publish() {
 		}
 	}
 }
+*/
 
 func subscribe() {
-	fmt.Println("SUBSCRIBER INITIATED")
 	for {
 		message, err := global.Subscriber.Recv(0)
 		if err != nil {
@@ -180,6 +181,7 @@ func scalarPublish() {
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
 			continue
 		}
+		global.Logger.Info(fmt.Sprintf("SCALAR PUBLISHED: %v", string(res)))
 	}
 }
 
@@ -209,5 +211,6 @@ func vectorPublish() {
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
 			continue
 		}
+		global.Logger.Info(fmt.Sprintf("VECTOR PUBLISHED: %v", string(res)))
 	}
 }
