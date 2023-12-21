@@ -2,8 +2,8 @@
 
 # Treon G/W Configuration
 # No IP address definition since it runs locally
-publish_port: 5550
-subscribe_port: 5551
+publish_port: 5501
+subscribe_port: 5500
 gateway_id: f91897d4
 
 # CUBE Configurations
