@@ -82,7 +82,7 @@ func main() {
 	if err != nil {
 		global.Logger.Error(fmt.Sprintf("Creating zmq4 subscriber failed: %v", err))
 	}
-	err = global.Publisher.Bind(fmt.Sprintf("tcp://*:%v", global.Conf.PublishPort))
+	err = global.Publisher.Connect(fmt.Sprintf("tcp://*:%v", global.Conf.PublishPort))
 	if err != nil {
 		global.Logger.Error(fmt.Sprintf("Binding zmq4 publisher to tcp://*:%v failed: %v", global.Conf.PublishPort, err))
 	}
