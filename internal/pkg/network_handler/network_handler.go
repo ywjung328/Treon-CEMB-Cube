@@ -1,14 +1,15 @@
 package network_handler
 
-import (
-	"fmt"
-	"global"
+// import (
+// 	"fmt"
+// 	"global"
 
-	"github.com/pebbe/zmq4"
-)
+// 	"github.com/pebbe/zmq4"
+// )
 
 var err error
 
+/*
 func InitZeroMQ() error {
 	context, err := zmq4.NewContext()
 	if err != nil {
@@ -37,3 +38,4 @@ func InitZeroMQ() error {
 	}
 	return nil
 }
+*/
