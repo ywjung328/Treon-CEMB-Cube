@@ -83,13 +83,17 @@ func main() {
 		global.Logger.Error(fmt.Sprintf("Creating zmq4 subscriber failed: %v", err))
 	}
 	// err = global.Publisher.Connect(fmt.Sprintf("tcp://localhost:%v", global.Conf.PublishPort))
-	err = global.Publisher.Connect(fmt.Sprintf("tcp://localhost:%v", global.Conf.PublishPort))
+	err = global.Publisher.Connect(fmt.Sprintf("tcp://127.0.0.1:%v", global.Conf.PublishPort))
 	if err != nil {
-		global.Logger.Error(fmt.Sprintf("Connecting zmq4 publisher to tcp://localhost:%v failed: %v", global.Conf.PublishPort, err))
+		global.Logger.Error(fmt.Sprintf("Connecting zmq4 publisher to tcp://127.0.0.1:%v failed: %v", global.Conf.PublishPort, err))
 	}
-	err = global.Subscriber.Connect(fmt.Sprintf("tcp://localhost:%v", global.Conf.SubscribePort))
+	err = global.Publisher.Connect(fmt.Sprintf("tcp://127.0.0.1:%v", global.Conf.SubscribePort))
 	if err != nil {
-		global.Logger.Error(fmt.Sprintf("Connecting zmq4 subscriber to tcp://localhost:%v failed: %v", global.Conf.SubscribePort, err))
+		global.Logger.Error(fmt.Sprintf("Connecting zmq4 publisher to tcp://127.0.0.1:%v failed: %v", global.Conf.SubscribePort, err))
+	}
+	err = global.Subscriber.Connect(fmt.Sprintf("tcp://127.0.0.1:%v", global.Conf.SubscribePort))
+	if err != nil {
+		global.Logger.Error(fmt.Sprintf("Connecting zmq4 subscriber to tcp://127.0.0.1:%v failed: %v", global.Conf.SubscribePort, err))
 	}
 	err = global.Subscriber.SetSubscribe(global.Conf.Filter)
 	if err != nil {
