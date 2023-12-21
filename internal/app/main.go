@@ -87,10 +87,6 @@ func main() {
 	if err != nil {
 		global.Logger.Error(fmt.Sprintf("Connecting zmq4 publisher to tcp://127.0.0.1:%v failed: %v", global.Conf.PublishPort, err))
 	}
-	err = global.Publisher.Connect(fmt.Sprintf("tcp://127.0.0.1:%v", global.Conf.SubscribePort))
-	if err != nil {
-		global.Logger.Error(fmt.Sprintf("Connecting zmq4 publisher to tcp://127.0.0.1:%v failed: %v", global.Conf.SubscribePort, err))
-	}
 	err = global.Subscriber.Connect(fmt.Sprintf("tcp://127.0.0.1:%v", global.Conf.SubscribePort))
 	if err != nil {
 		global.Logger.Error(fmt.Sprintf("Connecting zmq4 subscriber to tcp://127.0.0.1:%v failed: %v", global.Conf.SubscribePort, err))
