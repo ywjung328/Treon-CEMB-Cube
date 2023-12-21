@@ -106,7 +106,7 @@ func main() {
 		case <-scalarTicker.C:
 			go scalarPublish()
 		case <-vectorTicker.C:
-			go vectorPublish()
+			// go vectorPublish()
 		}
 	}
 }
@@ -211,6 +211,7 @@ func scalarPublish() {
 		// global.Logger.Info(string(res))
 		// _, err = global.Publisher.Send(string(res), 0)
 		_, err = global.Publisher.Send(fmt.Sprintf("%v %v", global.Conf.Filter, string(res)), 0)
+		fmt.Println(fmt.Sprintf("%v %v", global.Conf.Filter, string(res)), 0)
 		if err != nil {
 			fmt.Println(err)
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
@@ -242,6 +243,7 @@ func vectorPublish() {
 		// global.Logger.Info(string(res))
 		// _, err = global.Publisher.Send(string(res), 0)
 		_, err = global.Publisher.Send(fmt.Sprintf("%v %v", global.Conf.Filter, string(res)), 0)
+		fmt.Println(fmt.Sprintf("%v %v", global.Conf.Filter, string(res)), 0)
 		if err != nil {
 			fmt.Println(err)
 			global.Logger.Warn(fmt.Sprintf("Sending realtime measurements from cube '%v' via ZeroMQ failed: %v", cube.Name, err))
