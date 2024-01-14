@@ -106,7 +106,7 @@ func main() {
 		case <-scalarTicker.C:
 			go scalarPublish()
 		case <-vectorTicker.C:
-			// go vectorPublish()
+			go vectorPublish()
 		}
 	}
 }
@@ -167,46 +167,38 @@ func scalarPublish() {
 		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		// res, _ := json.Marshal(realTimeMeasurements)
 		// global.Logger.Info(string(res))
-		analogDigitalOutputs, err := GetAnalogDigitalOutputs(cube)
-		if err != nil {
-			global.Logger.Warn(fmt.Sprintf("Fetching analog digital outputs from cube '%v' failed: %v", cube.Name, err))
-			continue
-		}
-		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
-		// res, _ = json.Marshal(analogDigitalOutputs)
-		// global.Logger.Info(string(res))
-		deviceStatuses, err := GetDeviceStatuses(cube)
-		if err != nil {
-			global.Logger.Warn(fmt.Sprintf("Fetching device statuses from cube '%v' failed: %v", cube.Name, err))
-			continue
-		}
-		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
-		// res, _ = json.Marshal(deviceStatuses)
-		// global.Logger.Info(string(res))
-		channelStatuses, err := GetChannelStatuses(cube)
-		if err != nil {
-			global.Logger.Warn(fmt.Sprintf("Fetching channel statuses from cube '%v' failed: %v", cube.Name, err))
-			continue
-		}
-		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
-		// res, _ = json.Marshal(channelStatuses)
-		// global.Logger.Info(string(res))
-		measurementsStatuses, err := GetMeasurementsStatuses(cube)
-		if err != nil {
-			global.Logger.Warn(fmt.Sprintf("Fetching measurements statuses from cube '%v' failed: %v", cube.Name, err))
-			continue
-		}
-		// // fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
-		// res, _ = json.Marshal(measurementsStatuses)
-		// global.Logger.Info(string(res))
+		/*
+			analogDigitalOutputs, err := GetAnalogDigitalOutputs(cube)
+			if err != nil {
+				global.Logger.Warn(fmt.Sprintf("Fetching analog digital outputs from cube '%v' failed: %v", cube.Name, err))
+				continue
+			}
+			deviceStatuses, err := GetDeviceStatuses(cube)
+			if err != nil {
+				global.Logger.Warn(fmt.Sprintf("Fetching device statuses from cube '%v' failed: %v", cube.Name, err))
+				continue
+			}
+			channelStatuses, err := GetChannelStatuses(cube)
+			if err != nil {
+				global.Logger.Warn(fmt.Sprintf("Fetching channel statuses from cube '%v' failed: %v", cube.Name, err))
+				continue
+			}
+			measurementsStatuses, err := GetMeasurementsStatuses(cube)
+			if err != nil {
+				global.Logger.Warn(fmt.Sprintf("Fetching measurements statuses from cube '%v' failed: %v", cube.Name, err))
+				continue
+			}
+		*/
 		data := make(map[string]interface{})
+		data["DeviceType"] = "CUBE"
+		data["DataType"] = "Scalar"
 		data["Timestamp"] = time.Now().Unix()
 		data["SerialNumber"] = serialNumber
 		data["RealTimeMeasurements"] = realTimeMeasurements
-		data["AnalogDigitalOutputs"] = analogDigitalOutputs
-		data["DeviceStatuses"] = deviceStatuses
-		data["ChannelStatuses"] = channelStatuses
-		data["MeasurementStatuses"] = measurementsStatuses
+		// data["AnalogDigitalOutputs"] = analogDigitalOutputs
+		// data["DeviceStatuses"] = deviceStatuses
+		// data["ChannelStatuses"] = channelStatuses
+		// data["MeasurementStatuses"] = measurementsStatuses
 		res, _ := json.Marshal(data)
 		// global.Logger.Info(string(res))
 		// _, err = global.Publisher.Send(string(res), 0)
@@ -235,6 +227,8 @@ func vectorPublish() {
 		}
 		// fmt.Printf("Acc Max: %v / Vel Max: %v / Temperature: %v", realTimeMeasurements.AccMax, realTimeMeasurements.VelMax, realTimeMeasurements.T)
 		data := make(map[string]interface{})
+		data["DeviceType"] = "CUBE"
+		data["DataType"] = "Vector"
 		data["Timestamp"] = time.Now().Unix()
 		data["SerialNumber"] = serialNumber
 		data["VectorialMeasures"] = vectorialMeasures
