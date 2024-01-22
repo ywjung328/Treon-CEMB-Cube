@@ -11,13 +11,6 @@ import (
 	"time"
 )
 
-// import (
-// 	"fmt"
-// 	"global"
-
-// 	"github.com/pebbe/zmq4"
-// )
-
 var err error
 
 /*
