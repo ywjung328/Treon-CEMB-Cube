@@ -2,7 +2,7 @@
 
 # Treon G/W Configuration
 publish_address: 10.10.10.8
-publish_port: 8081
+# publish_port: 8081
 gateway_id: f91897d4
 save_log: False
 

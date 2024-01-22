@@ -31,3 +31,31 @@ func TreonRTMConverter(realTimeMeasurements RealTimeMeasurements, cube Cube) str
 
 	return string(formattedData)
 }
+
+type ScalarData struct {
+	AccX        float32 `json:"AccX"`
+	AccY        float32 `json:"AccY"`
+	AccZ        float32 `json:"AccZ"`
+	VelX        float32 `json:"VelX"`
+	VelY        float32 `json:"VelY"`
+	VelZ        float32 `json:"VelZ"`
+	Temperature float32 `json:"Temperature"`
+}
+
+type ScalarJson struct {
+	DeviceType   string     `json:"DeviceType"`
+	DataType     string     `json:"DataType"`
+	Timestamp    int64      `json:"Timestamp"`
+	SerialNumber string     `json:"SeiralNumber"`
+	GatewayId    string     `json:"GatewayId"`
+	Data         ScalarData `json:"Data"`
+}
+
+type VectorJson struct {
+	DeviceType   string            `json:"DeviceType"`
+	DataType     string            `json:"DataType"`
+	Timestamp    int64             `json:"Timestamp"`
+	SerialNumber string            `json:"SeiralNumber"`
+	GatewayId    string            `json:"GatewayId"`
+	Data         VectorialMeasures `json:"Data"`
+}
