@@ -23,8 +23,8 @@ func init() {
 		panic(err)
 	}
 	// now := time.Now()
-	// global.LogFile, err = os.Create(fmt.Sprintf("logs/log_%v.log", now.Format(time.RFC3339)))
-	global.LogFile, err = os.Create("logs/log.log")
+	global.LogFile, err = os.Create(fmt.Sprintf("logs/log_%v.log", now.Format(time.RFC3339)))
+	// global.LogFile, err = os.Create("logs/log.log")
 	if err != nil {
 		panic(err)
 	}

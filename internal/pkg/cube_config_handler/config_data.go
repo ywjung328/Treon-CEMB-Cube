@@ -9,9 +9,9 @@ type Cube struct {
 
 type CubeConfig struct {
 	GatewayId     string `yaml:"gateway_id"`
+	PublishAddress   string    `yaml:"publish_address"`
 	PublishPort   int    `yaml:"publish_port"`
-	SubscribePort int    `yaml:"subscribe_port"`
-	Filter        string `yaml:"filter"`
+	SaveLog bool `yaml:"save_log"`
 	Cubes         []Cube `yaml:"cubes"`
 	ScalarCycle   int    `yaml:"scalar_cycle"`
 	VectorCycle   int    `yaml:"vector_cycle"`
